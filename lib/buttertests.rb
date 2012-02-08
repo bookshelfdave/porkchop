@@ -49,9 +49,17 @@ class TestParser < Test::Unit::TestCase
 		assert_not_nil(Butter.new.op_equals.parse("= "))
 	end
 
-	def test_let		
+	def test_let
 		Butter.new.parse("let foo = 1")
 		Butter.new.parse("let foo = [1,2,3,4]")
 		Butter.new.parse('let foo = [1,2,3,{"Foo":"Bar"}]')		
 	end	
+
+	def test_tuple
+		Butter.new.tuple.parse("(1,2,3)")
+	end
+	#def test_fun
+	#	Butter.new.fn.parse("let fn (x,y) = x + 1 ")
+	#end	
+
 end

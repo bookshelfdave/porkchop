@@ -13,6 +13,7 @@ class Butter < Parslet::Parser
 	rule(:op_equals)  { str('=') >> space? }
 	
 	rule(:let)        { str("let") >> space? }
+	rule(:fn)        { str("fn") >> space? }
 
 	rule(:space)      { match('\s').repeat(1) }
 	rule(:space?)     { space.maybe }
@@ -43,15 +44,18 @@ class Butter < Parslet::Parser
 
 	rule(:letexpr)	  { let >> identifier >> op_equals >> expression }
 
-	rule(:lst) 			{ (lbracket >> expression >> 
-							(comma >> expression).repeat >> rbracket).as(:lst) }	
-    
-    rule(:mapentry)		{ string.as(:mapkey) >> colon >> expression.as(:mapvalue) }
-    rule(:mapentries) 	{ mapentry >> (comma >> mapentry).repeat}
-    rule(:map) 			{ lcurly >> mapentries.maybe.as(:map) >> rcurly}
+	rule(:lst) do 
+		(lbracket >> expression >> (comma >> expression).repeat >> rbracket).as(:lst) 
+	end
+
+	rule(:tuple) { (lparen >> expression >> (comma >> expression).repeat >> rparen).as(:tuple) }
+
+	rule(:mapentry)		{ string.as(:mapkey) >> colon >> expression.as(:mapvalue) }
+	rule(:mapentries) 	{ mapentry >> (comma >> mapentry).repeat}
+	rule(:map) 			{ lcurly >> mapentries.maybe.as(:map) >> rcurly}
 	rule(:expression) { integer | string | identifier | lst | map }
 
 	rule(:program)    { letexpr.repeat(1) }
-			
+
 	root :program
 end

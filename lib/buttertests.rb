@@ -1,4 +1,4 @@
-require '.\butter.rb'
+require '~/src/butter/lib/butter.rb'
 require "test/unit"
 
 class TestParser < Test::Unit::TestCase 
@@ -29,6 +29,8 @@ class TestParser < Test::Unit::TestCase
 		assert_equal("a",nested[:lst][2][:lst][0][:id].to_s)
 		assert_equal("b",nested[:lst][2][:lst][1][:id].to_s)
 		assert_equal("c",nested[:lst][2][:lst][2][:id].to_s)
+
+		Butter.new.lst.parse("[]")
 	end
 	
 	def test_map
@@ -40,7 +42,6 @@ class TestParser < Test::Unit::TestCase
 		assert_equal(2,map[:map][1][:mapvalue][:int].to_i)
 
 		assert_not_nil(Butter.new.map.parse('{"Foo":1,"Bar":[1,2,3]}'),"Map with a nested list")		
-		
 		assert_not_nil(Butter.new.map.parse('{"Foo":1,"Bar":{}}'),"Map with an empty nested map")
 	end
 
@@ -49,17 +50,17 @@ class TestParser < Test::Unit::TestCase
 		assert_not_nil(Butter.new.op_equals.parse("= "))
 	end
 
-	def test_let
-		Butter.new.parse("let foo = 1")
-		Butter.new.parse("let foo = [1,2,3,4]")
-		Butter.new.parse('let foo = [1,2,3,{"Foo":"Bar"}]')		
-	end	
-
 	def test_tuple
-		Butter.new.tuple.parse("(1,2,3)")
+		assert_not_nil(Butter.new.tuple.parse("(1,2,3)"))
+		assert_not_nil(Butter.new.tuple.parse("()"))
 	end
-	#def test_fun
-	#	Butter.new.fn.parse("let fn (x,y) = x + 1 ")
-	#end	
-
+	
+	def test_def
+		program = 
+		"def foo(x:String List,y:String) -> 
+			print_hello;
+			x;
+		end"
+		p Butter.new.parse(program)
+	end
 end
